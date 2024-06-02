@@ -6,8 +6,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Memory Game",
-  description: "Classic Memory Game built in NextJS with TailwindCSS",
-  keywords: "memory game, nextjs, tailwindcss, classic game, card matching game",
+  description: "Classic Memory Game built in NextJS (TypeSript) and TailwindCSS",
+  keywords: ["memory game", "nextjs", "typescript", "tailwindcss", "classic game", "card matching game"],
   authors: [{ name: "Shridhar Pandey" }],
 };
 
