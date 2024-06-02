@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // List of emojis to use on the cards
 const emojis = ['🥔', '🍒', '🥑', '🌽', '🥕', '🍇', '🍉', '🍌', '🥭', '🍍'];
@@ -15,7 +15,7 @@ interface Card {
  * Shuffles an array using the Fisher-Yates shuffle algorithm.
  * This function creates a copy of the original array, then randomly swaps elements within the array.
  * 
- * @param array - The array to be shuffled.
+ * @param {any[]} array - The array to be shuffled.
  * @returns A new array with the elements shuffled.
  */
 const shuffle = (array: any[]) => {
@@ -33,9 +33,9 @@ const shuffle = (array: any[]) => {
  * Picks a specified number of random items from an array.
  * This function creates a copy of the original array, then randomly selects elements from the copied array.
  * 
- * @param array - The array to pick items from.
- * @param items - The number of items to pick.
- * @returns A new array containing the randomly picked items.
+ * @param {any[]} array - The array to pick items from.
+ * @param {number} items - The number of items to pick.
+ * @returns {any[]} A new array containing the randomly picked items.
  */
 const pickRandom = (array: any[], items: number) => {
   const clonedArray = [...array]; // Create a copy of the array to avoid mutating the original array.
@@ -108,8 +108,13 @@ const MemoryGame: React.FC = () => {
     }
   }, [matchedCards, cards.length, moves, time]); // Depend on matchedCards, cards.length, moves, and time to run this effect whenever any of these change
 
-  // Function to handle flipping a card
-  const flipCard = (index: number) => {
+  /**
+   * Handles flipping a card.
+   * This function is responsible for flipping a card when it meets certain conditions.
+   * 
+   * @param {number} index - The index of the card to flip.
+   */
+  const flipCard = useCallback((index: number) => {
     // Check if the game is started, only allow flipping if less than 2 cards are currently flipped, and prevent flipping already flipped or matched cards
     if (
       gameStarted && // The game must be started
@@ -120,29 +125,37 @@ const MemoryGame: React.FC = () => {
       setFlippedCards((prev) => [...prev, index]); // Add the index of the flipped card to the flippedCards array
       setMoves((prev) => prev + 1); // Increment the move count
     }
-  };
+  }, [gameStarted, flippedCards, matchedCards]); // Depend on gameStarted, flippedCards, and matchedCards to run this function whenever any of these change
 
-  // Function to start the game
-  const startGame = () => {
-    setGameStarted(true); // Set the game state to started
-    setMoves(0); // Reset the move count to 0
-    setTime(0); // Reset the timer to 0
-    setMatchedCards([]); // Clear the list of matched cards
-    setFlippedCards([]); // Clear the list of flipped cards
+  /**
+   * Starts the game.
+   * This function initializes the game by shuffling the deck of cards, setting game-related states,
+   * and setting the game as started.
+   */
+  const startGame = useCallback(() => {
     const dimensions = 4; // Define the dimensions of the game board (4x4 grid)
     const picks = pickRandom(emojis, (dimensions * dimensions) / 2); // Pick a specified number of random emojis (half of the total number of cards)
     const items = shuffle([...picks, ...picks]); // Duplicate the picked emojis and shuffle them to create the game deck
     setCards(items.map((item, index) => ({ id: index, emoji: item, flipped: false }))); // Initialize the cards state with the shuffled deck, each card has an id, emoji, and flipped status
-  };
+    setGameStarted(true); // Set the game state to started
+    setMoves(0); // Start the move count from 0
+    setTime(0); // Start the timer from 0
+    setMatchedCards([]); // Initialise the empty list of matched cards
+    setFlippedCards([]); // Initialise the empty list of flipped cards
+  }, []);
 
-  // Function to reset the game
-  const resetGame = () => {
-    setGameStarted(false); // Set the game state to started
+  /**
+   * Resets the game.
+   * This function resets the game by setting game-related states to their initial values,
+   * effectively stopping the game and clearing any existing game progress.
+   */
+  const resetGame = useCallback(() => {
+    setGameStarted(false); // Set the game state to stop
     setMoves(0); // Reset the move count to 0
     setTime(0); // Reset the timer to 0
     setMatchedCards([]); // Clear the list of matched cards
     setFlippedCards([]); // Clear the list of flipped cards
-  };
+  }, []);
 
   return (
     <div className="flex flex-col items-center p-4">
