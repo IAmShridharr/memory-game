@@ -101,7 +101,7 @@ const MemoryGame: React.FC = () => {
   // Effect to check if the game is won
   useEffect(() => {
     // Check if the number of matched cards is equal to the total number of cards and ensure cards array is not empty
-    if (matchedCards.length === cards.length && cards.length > 0) {
+    if (matchedCards.length === cards.length && cards.length > 0 && flippedCards.length === 2) {
       setGameStarted(false); // Stop the game
       alert(`You won! Moves: ${moves}, Time: ${time} seconds`); // Display an alert with the number of moves and time taken to win the game
       resetGame() // Reset the game to its initial state
